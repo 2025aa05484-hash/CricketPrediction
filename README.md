@@ -59,14 +59,6 @@ The following machine learning models were implemented and evaluated for cricket
 - Confusion matrix and classification reports
 - Visualization of model performance comparisons
 
-## Installation
-
-1. Clone this repository
-2. Install required packages:
-   ```
-   pip install -r requirements.txt
-   ```
-
 ## Usage
 
 ### Method 1: Run the Complete Pipeline
@@ -143,3 +135,30 @@ The ensemble methods (Random Forest and XGBoost) consistently outperformed indiv
    ```
    pip install -r requirements.txt
    ```
+
+4. Install additional required packages:
+   ```
+   pip install kagglehub
+   pip install scikit-learn --only-binary=all
+   pip install joblib
+   ```
+
+### Alternative Installation (Individual Packages)
+If you encounter issues with the requirements.txt, you can install packages individually:
+
+```bash
+# Core ML and Data Science packages
+pip install streamlit==1.28.0
+pip install pandas==2.1.0
+pip install numpy==1.24.3
+pip install matplotlib==3.7.2
+pip install seaborn==0.12.2
+pip install plotly==5.15.0
+
+# Machine Learning packages
+pip install scikit-learn --only-binary=all
+pip install xgboost==2.0.0
+pip install joblib
+```
+
+**Note**: We use `--only-binary=all` for scikit-learn to avoid compilation issues on Windows systems without Microsoft Visual C++ Build Tools.
