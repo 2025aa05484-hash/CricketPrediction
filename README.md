@@ -51,52 +51,58 @@ The following machine learning models were implemented and evaluated for cricket
 
 ## Features
 
-- Multiple ML models: Logistic Regression, Decision Tree, KNN, Naive Bayes, Random Forest, XGBoost
-- Interactive web interface using Streamlit
-- Data preprocessing and feature engineering
-- Model performance evaluation and comparison
-- Comprehensive test data predictions analysis
-- Confusion matrix and classification reports
-- Visualization of model performance comparisons
+- **Multiple ML models**: Logistic Regression, Decision Tree, KNN, Naive Bayes, Random Forest, XGBoost
+- **Interactive web interface** using Streamlit with 3 application modes:
+  - Single Model Training & Evaluation
+  - Complete Pipeline Training & Comparison
+  - CSV File Evaluation for custom datasets
+- **Smart data handling**: Automatic winner column creation from cricket match data
+- **Comprehensive evaluation**: Performance metrics, confusion matrices, classification reports
+- **Advanced visualizations**: Interactive charts, model comparison heatmaps, performance plots
+- **Test data persistence**: Automatic CSV export of test splits with download functionality
+- **Flexible data input**: Kaggle auto-load or custom CSV upload
+- **Real-time training progress** and detailed prediction analysis
 
 ## Usage
 
-### Method 1: Run the Complete Pipeline
-1. Navigate to the project-folder directory:
-   ```
-   cd project-folder
-   ```
-
-2. Run the integrated pipeline:
-   ```
-   python main.py
-   ```
-   This will automatically:
-   - Download the cricket dataset from Kaggle
-   - Train all 6 models
-   - Display performance metrics and test predictions
-   - Generate visualization charts
-
-### Method 2: Run the Streamlit Web Interface
+### Method 1: Run the Streamlit Web Interface (Recommended)
 1. Run the Streamlit app:
    ```
    streamlit run app.py
    ```
 
-2. Upload your cricket dataset (CSV format)
-3. Select a machine learning model
-4. Train the model and view predictions
+2. Choose from three application modes:
+   - **Single Model Training**: Train individual ML models
+   - **Complete Pipeline Training**: Train and compare all 6 models simultaneously  
+   - **CSV File Evaluation**: Upload and evaluate test datasets
+
+3. For data input, select either:
+   - **Auto-load Kaggle Dataset**: Automatically download cricket data from Kaggle
+   - **Upload Custom CSV**: Use your own cricket dataset
+
+### Method 2: Individual Model Testing
+1. Navigate to the project-folder directory:
+   ```
+   cd project-folder
+   ```
+
+2. Run individual model scripts:
+   ```
+   python logistic.py
+   python decision_tree.py
+   python random_forest.py
+   # ... etc for other models
+   ```
 
 ## Project Structure
 
 ```
 CricketPrediction/
-├── app.py                        # Main Streamlit application
-├── CricketWinningPrediction.ipynb # Jupyter notebook version
+├── app.py                        # Main Streamlit application with 3 modes
 ├── README.md                     # This file
 ├── requirements.txt              # Python dependencies
 └── project-folder/
-    ├── main.py                   # Integrated ML pipeline script
+    ├── dataloader.py             # Dataset utilities and preprocessing
     ├── decision_tree.py          # Decision Tree model implementation
     ├── knn.py                    # K-Nearest Neighbors model
     ├── logistic.py               # Logistic Regression model
