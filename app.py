@@ -375,7 +375,7 @@ def main():
     # Mode selection
     app_mode = st.sidebar.selectbox(
         "Choose Application Mode:",
-        ["Single Model Evaluation", "Complete Pipeline Training", "CSV File Evaluation"],
+        ["Single Model Training", "Complete Pipeline Training", "CSV File Evaluation"],
         help="Select the mode for cricket prediction analysis"
     )
     
@@ -701,7 +701,15 @@ def handle_comprehensive_training_modes(app_mode):
                         
                         # Initialize and train model
                         model_class = MODEL_REGISTRY[model_choice]
-                        model = model_class()
+                        if model_choice == "KNN":
+                            model = model_class(n_neighbors=5)
+                        elif model_choice == "Random Forest":
+                            model = model_class(n_estimators=100, max_depth=10)
+                        elif model_choice == "XGBoost":
+                            model = model_class(n_estimators=100, max_depth=6, learning_rate=0.1)
+                        else:
+                            model = model_class()
+                        
                         model.train(X_train, y_train)
                         
                         # Evaluate model
@@ -777,34 +785,23 @@ def handle_comprehensive_training_modes(app_mode):
                             best_models_df = pd.DataFrame(best_models_data)
                             st.dataframe(best_models_df, use_container_width=True)
                             
-                            # Visualizations
+                            # Overall best model
+                            best_overall = results_df['F1'].idxmax()
+                            st.success(f"🏆 **Best Overall Model (by F1-Score):** {best_overall} ({results_df.loc[best_overall, 'F1']:.4f})")
+                            
+                            # Create visualizations
                             st.subheader("📈 Performance Visualizations")
                             create_comprehensive_visualizations(results_df)
                             
-                            # Comprehensive analysis
-                            st.subheader("🔬 Detailed Predictions Analysis")
+                            # Comprehensive predictions analysis
+                            st.subheader("🔍 Comprehensive Test Predictions Analysis")
                             display_comprehensive_predictions_analysis(results, predictions)
                             
                         else:
                             st.error("❌ No models were trained successfully.")
                             
                     except Exception as e:
-                        st.error(f"Error during pipeline execution: {str(e)}")
-        
-        else:  # Model Analysis mode
-            st.subheader("🔬 Advanced Model Analysis")
-            st.markdown("Detailed analysis and comparison tools")
-            
-            analysis_type = st.selectbox(
-                "Choose Analysis Type:",
-                ["Model Comparison", "Feature Importance", "Learning Curves", "Hyperparameter Analysis"]
-            )
-            
-            if analysis_type == "Model Comparison":
-                st.info("Select 'Complete Pipeline Training' mode for comprehensive model comparison.")
-            
-            else:
-                st.info(f"{analysis_type} analysis coming soon!")
+                        st.error(f"Error during pipeline execution: {str(e)}") 
 
 # Helper function to add footer
 def add_footer():
