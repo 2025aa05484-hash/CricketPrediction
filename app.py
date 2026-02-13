@@ -875,7 +875,7 @@ def add_footer():
     st.markdown(
         """
         <div style="text-align: center; color: grey; font-size: 14px;">
-            Created by <b>Cricket ML Team</b> | Cricket Performance Prediction System
+            Created by <b>Rahul Shelke</b> | BITS ID: 2025AA05484
         </div>
         """,
         unsafe_allow_html=True
