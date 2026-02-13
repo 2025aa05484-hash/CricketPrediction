@@ -669,7 +669,7 @@ def handle_comprehensive_training_modes(app_mode):
         uploaded_file = st.file_uploader(
             "Upload CSV file", 
             type=['csv'],
-            help="CSV should contain cricket match data with a 'winner' column as target"
+            help="CSV should contain cricket match data. If no 'winner' column exists, it will be created automatically from 'runs' data."
         )
         
         if uploaded_file is not None:
@@ -677,10 +677,24 @@ def handle_comprehensive_training_modes(app_mode):
                 df = pd.read_csv(uploaded_file)
                 st.success("✅ File uploaded successfully!")
                 
-                # Check if winner column exists
+                # Check if winner column exists, if not create it dynamically
                 if 'winner' not in df.columns:
-                    st.error("CSV must contain a 'winner' column as target variable.")
-                    return
+                    st.info("🔧 Creating 'winner' column from cricket match data...")
+                    
+                    # Create winner column using the same logic as dataloader.py
+                    if 'match_id' in df.columns and 'runs' in df.columns:
+                        # Winner is determined by highest runs in each match
+                        match_results = df.groupby('match_id')['runs'].transform('max')
+                        df['winner'] = (df['runs'] == match_results).astype(int)
+                        st.success("✅ Winner column created based on highest runs per match!")
+                    elif 'runs' in df.columns:
+                        # Fallback: create binary target based on runs above median
+                        median_runs = df['runs'].median()
+                        df['winner'] = (df['runs'] > median_runs).astype(int)
+                        st.success(f"✅ Winner column created based on runs > {median_runs:.1f} (median)!")
+                    else:
+                        st.error("❌ Cannot create winner column: CSV must contain 'runs' column for cricket data")
+                        return
                 
                 # Prepare data
                 X = df.drop('winner', axis=1)
