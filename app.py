@@ -27,11 +27,11 @@ from sklearn.metrics import (
     confusion_matrix, classification_report
 )
 
-# Import dataset utilities from main.py
+# Import dataset utilities from project-folder (like colleague's pattern)
 try:
-    from main import CricketDatasetUtilities, load_dataset
+    from dataloader import CricketDatasetUtilities, load_dataset
 except ImportError as e:
-    st.error(f"Error importing from main.py: {e}")
+    st.error(f"Error importing dataset utilities: {e}")
     st.stop()
 
 # Import custom model classes
@@ -337,42 +337,10 @@ def display_comprehensive_predictions_analysis(results, predictions):
     distribution_df = pd.DataFrame(distribution_data)
     st.dataframe(distribution_df, use_container_width=True)
 
-def save_test_data_to_csv(X_test, y_test, filename="cricket_test_split.csv"):
-    """Save test data split to CSV file"""
-    try:
-        # Combine features and target
-        if hasattr(X_test, 'copy'):
-            test_df = X_test.copy()
-        else:
-            test_df = pd.DataFrame(X_test)
-        
-        # Add target column
-        if hasattr(y_test, 'values'):
-            test_df['winner'] = y_test.values
-        else:
-            test_df['winner'] = y_test
-        
-        # Save to CSV
-        test_df.to_csv(filename, index=False)
-        st.success(f"✅ Test data saved as: {filename} ({len(test_df)} samples)")
-        
-        # Provide download button
-        with open(filename, "rb") as f:
-            st.download_button(
-                label="📥 Download Test Data CSV",
-                data=f,
-                file_name=filename,
-                mime="text/csv",
-                help="Download the test split data for future use"
-            )
-        
-        return True
-    except Exception as e:
-        st.error(f"Error saving test data: {str(e)}")
-        return False
+
 
 def save_test_data_to_csv(X_test, y_test, filename="cricket_test_split.csv"):
-    """Save test data split to CSV file"""
+    """Save test data split to CSV file with download functionality"""
     try:
         # Combine features and target
         if hasattr(X_test, 'copy'):
@@ -380,15 +348,16 @@ def save_test_data_to_csv(X_test, y_test, filename="cricket_test_split.csv"):
         else:
             test_df = pd.DataFrame(X_test)
         
-        # Add target column
+        # Add target column - ensure consistent naming
+        target_col = 'winner' if 'winner' not in test_df.columns else 'target'
         if hasattr(y_test, 'values'):
-            test_df['winner'] = y_test.values
+            test_df[target_col] = y_test.values
         else:
-            test_df['winner'] = y_test
+            test_df[target_col] = y_test
         
         # Save to CSV
         test_df.to_csv(filename, index=False)
-        st.success(f"💾 Test data saved as: {filename} ({len(test_df)} samples)")
+        st.success(f"💾 Test data saved: {filename} ({len(test_df)} samples, {len(test_df.columns)-1} features)")
         
         # Provide download button
         with open(filename, "rb") as f:
@@ -397,12 +366,13 @@ def save_test_data_to_csv(X_test, y_test, filename="cricket_test_split.csv"):
                 data=f,
                 file_name=filename,
                 mime="text/csv",
-                help="Download the test split data for future use"
+                help="Download the test split data for external validation",
+                key=f"download_{filename}"
             )
         
         return True
     except Exception as e:
-        st.error(f"Error saving test data: {str(e)}")
+        st.error(f"❌ Error saving test data: {str(e)}")
         return False
 
 def evaluate_model(model, X_test, y_test):
