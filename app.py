@@ -61,19 +61,20 @@ LOCAL_TEST_FILE = "cricket_test.csv"
 
 @st.cache_data
 def load_cricket_dataset():
-    """Load and preprocess cricket dataset using utilities from main.py"""
+    """Load and preprocess cricket dataset using utilities from dataloader.py"""
     try:
-        # Use the utilities from main.py
+        # Use the utilities from dataloader.py
         X, y, match_df = CricketDatasetUtilities.load_and_preprocess_cricket_data()
         
-        if X is None:
-            st.error("Failed to load cricket dataset.")
+        if X is None or y is None or match_df is None:
+            st.error("Failed to load cricket dataset from Kaggle. Please check your internet connection or try uploading a custom CSV file.")
             return None, None, None
         
         return X, y, match_df
     
     except Exception as e:
-        st.error(f"Error loading dataset: {str(e)}")
+        st.error(f"Error loading dataset from Kaggle: {str(e)}")
+        st.info("💡 **Tip**: Try using 'Upload Custom CSV' mode instead, or check if the Kaggle dataset is accessible.")
         return None, None, None
 
 def train_all_models(X_train, y_train, X_test, y_test):
@@ -620,11 +621,11 @@ def handle_comprehensive_training_modes(app_mode):
     if data_source == "Auto-load Kaggle Dataset":
         st.subheader("📥 Loading Cricket Dataset from Kaggle")
         
-        with st.spinner("Downloading and preprocessing cricket dataset..."):
+        with st.spinner("Downloading and preprocessing cricket dataset from Kaggle..."):
             X, y, df = load_cricket_dataset()
         
         if X is not None:
-            st.success("✅ Dataset loaded successfully!")
+            st.success("✅ Dataset loaded successfully from Kaggle!")
             
             col1, col2, col3, col4 = st.columns(4)
             with col1:
@@ -663,6 +664,9 @@ def handle_comprehensive_training_modes(app_mode):
                     st.write("**Target Statistics:**")
                     st.write(f"Class 0 (Loss): {target_counts[0]} ({target_counts[0]/len(y)*100:.1f}%)")
                     st.write(f"Class 1 (Win): {target_counts[1]} ({target_counts[1]/len(y)*100:.1f}%)")
+        else:
+            st.warning("⚠️ Could not load dataset from Kaggle. Please try uploading a custom CSV file instead.")
+            st.info("💡 **Alternative**: Switch to 'Upload Custom CSV' mode in the sidebar to proceed with your own cricket dataset.")
         
     elif data_source == "Upload Custom CSV":
         st.subheader("📁 Upload Custom Cricket Dataset")
