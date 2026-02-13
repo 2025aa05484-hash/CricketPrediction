@@ -337,6 +337,74 @@ def display_comprehensive_predictions_analysis(results, predictions):
     distribution_df = pd.DataFrame(distribution_data)
     st.dataframe(distribution_df, use_container_width=True)
 
+def save_test_data_to_csv(X_test, y_test, filename="cricket_test_split.csv"):
+    """Save test data split to CSV file"""
+    try:
+        # Combine features and target
+        if hasattr(X_test, 'copy'):
+            test_df = X_test.copy()
+        else:
+            test_df = pd.DataFrame(X_test)
+        
+        # Add target column
+        if hasattr(y_test, 'values'):
+            test_df['winner'] = y_test.values
+        else:
+            test_df['winner'] = y_test
+        
+        # Save to CSV
+        test_df.to_csv(filename, index=False)
+        st.success(f"✅ Test data saved as: {filename} ({len(test_df)} samples)")
+        
+        # Provide download button
+        with open(filename, "rb") as f:
+            st.download_button(
+                label="📥 Download Test Data CSV",
+                data=f,
+                file_name=filename,
+                mime="text/csv",
+                help="Download the test split data for future use"
+            )
+        
+        return True
+    except Exception as e:
+        st.error(f"Error saving test data: {str(e)}")
+        return False
+
+def save_test_data_to_csv(X_test, y_test, filename="cricket_test_split.csv"):
+    """Save test data split to CSV file"""
+    try:
+        # Combine features and target
+        if hasattr(X_test, 'copy'):
+            test_df = X_test.copy()
+        else:
+            test_df = pd.DataFrame(X_test)
+        
+        # Add target column
+        if hasattr(y_test, 'values'):
+            test_df['winner'] = y_test.values
+        else:
+            test_df['winner'] = y_test
+        
+        # Save to CSV
+        test_df.to_csv(filename, index=False)
+        st.success(f"💾 Test data saved as: {filename} ({len(test_df)} samples)")
+        
+        # Provide download button
+        with open(filename, "rb") as f:
+            st.download_button(
+                label="📥 Download Test Data CSV",
+                data=f,
+                file_name=filename,
+                mime="text/csv",
+                help="Download the test split data for future use"
+            )
+        
+        return True
+    except Exception as e:
+        st.error(f"Error saving test data: {str(e)}")
+        return False
+
 def evaluate_model(model, X_test, y_test):
     """Evaluate model performance and return metrics"""
     try:
@@ -571,6 +639,10 @@ def handle_comprehensive_training_modes(app_mode):
     test_size = st.sidebar.slider("Test Set Size (%)", 10, 40, 20, 5) / 100
     random_state = st.sidebar.number_input("Random State", value=42, min_value=0)
     
+    st.sidebar.info("💾 Test data will be automatically saved as CSV when training starts")
+    
+    st.sidebar.info("💾 Test data will be automatically saved as CSV when training starts")
+    
     # Initialize data variables
     X, y, df = None, None, None
     
@@ -699,6 +771,9 @@ def handle_comprehensive_training_modes(app_mode):
                         
                         st.write(f"**Training samples:** {len(X_train)} | **Test samples:** {len(X_test)}")
                         
+                        # Save test data to CSV
+                        save_test_data_to_csv(X_test, y_test, f"cricket_test_split_{model_choice.lower().replace(' ', '_')}.csv")
+                        
                         # Initialize and train model
                         model_class = MODEL_REGISTRY[model_choice]
                         if model_choice == "KNN":
@@ -755,6 +830,9 @@ def handle_comprehensive_training_modes(app_mode):
                         )
                         
                         st.write(f"**Training samples:** {len(X_train)} | **Test samples:** {len(X_test)}")
+                        
+                        # Save test data to CSV
+                        save_test_data_to_csv(X_test, y_test, "cricket_test_split_complete_pipeline.csv")
                         
                         # Train all models
                         results, predictions = train_all_models(X_train, y_train, X_test, y_test)
